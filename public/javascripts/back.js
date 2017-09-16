@@ -4,4 +4,4 @@
 		e.preventDefault()
 		window.history.back()
 	})
-})
+})()
