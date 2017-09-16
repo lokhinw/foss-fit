@@ -192,12 +192,15 @@ int generate_workout()
 
     ret = ret.substr(0,ret.size()-1) + "]";
 
-    printf("generate_workout not yet fully implemented!\n");
+    printf(ret.c_str());
     return 0;
 }
 
 int get_data()
 {
+
+    exercises.emplace_back(-1, "rest", "don't fucking move", std::vector<int>(), std::vector<int>(), 0, 5);
+
     printf("get_data not yet implemented!\n");
     return 0;
 }
