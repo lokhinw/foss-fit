@@ -58,8 +58,8 @@ router.get('/preferences', function(req, res, next) {
 //userflow index: 5
 router.get('/preview', function(req, res, next){
 
-	firebase.initializeApp(config)
-	res.send('complete this endpoint')
+	var database = firebase.database()
+	var data = database.ref().once("value").then(snapshot => snapshot.val()).then(data=>{res.send(data)});
 })
 
 module.exports = router;
