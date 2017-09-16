@@ -11,16 +11,7 @@ class Net {
 
     urlencoded = '?' + urlencoded.substring(1)
 
-    return f(url + urlencoded).then(result => {
-      return result.json() // ensure a search isn't resulting no videos, making items[0] nil
-    }).then(json => {
-      return new Promise((resolve, reject) => {
-        resolve(json)
-      })
-      // callback(json);
-    }).catch(e => {
-      console.error(e)
-    })
+    return f(url + urlencoded)
   }
 }
 
