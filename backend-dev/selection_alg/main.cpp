@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <string>
+#include <math.h>
 #include <string.h>
 
 #define FOCUS_MULTIPLIER 2.5
@@ -53,8 +54,10 @@ std::vector<exercise> exercises;
 int num_types_equipment, num_body_parts;
 std::vector<bool> equipment_is_machine; // for short workouts, machines are inconvenient and thus undesirable
 preferences p;
-const int standard_rep_counts[] = {4, 5, 8, 10, 12, 15};
+const int standard_rep_counts[] = {8, 10, 12, 15};
+const int num_std_rep_counts = 4;
 const int standard_time_counts[] = {15, 20, 30, 40, 45, 60, 120, 150, 180};
+const int num_std_time_counts = 9;
 
 int get_data();
 int get_input();
@@ -108,14 +111,17 @@ int generate_workout()
             next_seconds_left = seconds_left;
             memcpy(next_fatigue, current_fatigue, num_body_parts * sizeof(double));
             //record current block
-            //cur_choice = block(
+            cur_choice = block(exercises[i].id,1,0);
 
+            //simulate reps until desired number reached
             bool more_reps = true;
             for (int j = 0; more_reps; ++j)
             {
                 //update current block
+                ++cur_choice.reps;
 
                 next_seconds_left -= exercises[i].sec_per_rep;
+
                 for (int k = 0; k < num_body_parts; ++k)
                     next_fatigue[k] -= FATIGUE_RUST * exercises[i].sec_per_rep;
                 for (int k = 0; k < exercises[i].body_parts.size(); ++k)
@@ -125,9 +131,42 @@ int generate_workout()
                         more_reps = false;
                 }
             }
-            //calculate standard deviation here
-            //for (int k = 0; k < num_body_parts; ++k)
+            //redo reps so they're more organized; this is ugly, but it works
+            const static int reps_per_rep[] = {0,  0,  0,  0,  0,  8,  8,  8,  8, 10, 10,
+                                                  10, 12, 12, 15, 15, 15,  8,  8, 10, 10,
+                                                  10, 10, 12, 12, 12, 12, 15, 15, 15, 15};
+            const static int sets_per_rep[] = {0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,
+                                                   1,  1,  1,  1,  1,  1,  2,  2,  2,  2,
+                                                   2,  2,  2,  2,  2,  2,  2,  2,  2,  2};
+            if (cur_choice.reps > 30)
+                cur_choice = block(i, 2, 15);
+            else
+                cur_choice = block(i, sets_per_rep[cur_choice.reps], reps_per_rep[cur_choice.reps]);
 
+            //reset counters due to redone calcs
+            next_seconds_left = seconds_left;
+            memcpy(next_fatigue, current_fatigue, num_body_parts * sizeof(double));
+
+            for (int k = 0; k < num_body_parts; ++k)
+                next_fatigue[k] -= FATIGUE_RUST * exercises[i].sec_per_rep * cur_choice.reps*cur_choice.sets;
+            for (int k = 0; k < exercises[i].body_parts.size(); ++k)
+                next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT*exercises[i].level* cur_choice.reps*cur_choice.sets;
+
+            //update time
+            next_seconds_left -= cur_choice.reps*cur_choice.sets*exercises[i].sec_per_rep;
+
+            //calculate standard deviation here
+            //it's actually the sum of squares of deviations since the sqrt and divisions are all redundant
+            cur_choice_dev = 0.0;
+            for (int k = 0; k < num_body_parts; ++k)
+                cur_choice_dev += pow(next_fatigue[k]-intended_fatigue[k],2.0);
+
+            //if we've found a better block, then use that
+            if (cur_choice_dev < best_choice_dev)
+            {
+                best_choice_dev = cur_choice_dev;
+                memcpy(&best_choice, &cur_choice, sizeof(block)); //same thing as assign but was too lazy to overload that operator
+            }
         }
     }
 
