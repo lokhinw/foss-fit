@@ -7,8 +7,8 @@ class GPlaces{
 		let params = {
 			key: process.env.GOOGLE_KEY,
 			photoreference: photoreference,
-			maxheight: 500,
-			maxwidth: 500
+			maxheight: 100,
+			maxwidth: 100
 		}
 		return Net.fetch(endpoint, params)
 	}

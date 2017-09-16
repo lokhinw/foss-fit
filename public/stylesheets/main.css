@@ -1,0 +1,36 @@
+#hero {
+    height: 100vh;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#hero img {
+    height: 50%;
+}
+
+.index-btn {
+    width: 100%;
+}
+
+@media only screen and (max-width:430px) {
+    nav a.brand-logo {
+        width: 100%;
+    }
+}
+
+#wo-preview {
+    margin-bottom: 54px!important
+}
+
+.noUi-connect {
+    background: #1e88e5 !important;
+}
+
+#test-slider{
+    margin-top: 5rem;
+}

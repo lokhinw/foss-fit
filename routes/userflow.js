@@ -1,3 +1,5 @@
+'use strict'
+
 var express = require('express');
 var router = express.Router();
 const GMaps = require('./../apis/GMaps')
@@ -22,21 +24,44 @@ router.get('/location', function(req, res, next) {
 router.get('/nearme', function(req, res, next){
 	let latitude = req.query.lat
 	let longitude = req.query.long
+	var async = []
 	GMaps.search(latitude, longitude).then(data=>{
 		var results = []
 		// dude only get the first result for now
-		for(let i = 0; i<1; i++){
-		// for(let i = 0; i<data['results'].length; i++){
+		// res.send(data)
+		for(let i = 0; i<data['results'].length; i++){
 			results.push({
 				name: data['results'][i]['name'],
-				photo_reference: data['results'][i]['photos'][0]['photo_reference'],
+				id: data['results'][i]['id'],
 				address: data['results'][i]['vicinity']
 			})
+			if(data['results'][i]['photos']){
+				results[i].photo_reference = data['results'][i]['photos'][0]['photo_reference']
+			}
 		}
-		GPlaces.getPhoto(results[0].photo_reference).then(photo=>{
-			results[0].photo = photo.url
-			res.send(results)
-		})
+
+		for(let i = 0; i<data['results'].length; i++){
+		//save api requests by only doing 1
+		// for(let i = 0; i<1; i++){
+			console.log('searching')
+			if(!results[i].photo_reference)
+				continue;
+			async.push(true)
+			GPlaces.getPhoto(results[i].photo_reference).then(photo=>{
+				results[i].photo = photo.url
+				console.log(photo.url)
+				async.pop()
+			})
+		}
+		let wait = () =>{
+			if(async.length > 0){
+				setTimeout(wait, 100)
+			}
+			else{
+				res.render('nearme', {locations: results})
+			}
+		}
+		wait()
 	})
 })
 
@@ -52,7 +77,7 @@ router.get('/fromhome', function(req, res, next) {
 
 //userflow index: 4
 router.get('/preferences', function(req, res, next) {
-	
+	res.render('preferences')
 });
 
 //userflow index: 5
