@@ -59,7 +59,11 @@ router.get('/preferences', function(req, res, next) {
 router.get('/preview', function(req, res, next){
 
 	var database = firebase.database()
-	var data = database.ref().once("value").then(snapshot => snapshot.val()).then(data=>{res.send(data)});
+	var data = database.ref().once("value")
+	.then(snapshot => snapshot.val())
+	.then(data=>{
+		res.send(data)
+	});
 })
 
 module.exports = router;
