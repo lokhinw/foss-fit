@@ -16,3 +16,9 @@
 .index-btn{
     width: 100%;
 }
+
+@media only screen and (max-width:430px){
+    nav a.brand-logo{
+        width: 100%;
+    }
+}
