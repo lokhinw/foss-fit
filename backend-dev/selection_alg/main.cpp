@@ -98,6 +98,7 @@ int generate_workout()
     double current_fatigue[num_body_parts] = {0.0};
     double next_fatigue[num_body_parts];
     bool another_exercise = true;
+    std::string ret = "[";
 
     //select blocks of exercises
     while (another_exercise)
@@ -147,12 +148,11 @@ int generate_workout()
             next_seconds_left = seconds_left;
             memcpy(next_fatigue, current_fatigue, num_body_parts * sizeof(double));
 
+            //recalc fatigue and time
             for (int k = 0; k < num_body_parts; ++k)
                 next_fatigue[k] -= FATIGUE_RUST * exercises[i].sec_per_rep * cur_choice.reps*cur_choice.sets;
             for (int k = 0; k < exercises[i].body_parts.size(); ++k)
                 next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT*exercises[i].level* cur_choice.reps*cur_choice.sets;
-
-            //update time
             next_seconds_left -= cur_choice.reps*cur_choice.sets*exercises[i].sec_per_rep;
 
             //calculate standard deviation here
@@ -168,7 +168,29 @@ int generate_workout()
                 memcpy(&best_choice, &cur_choice, sizeof(block)); //same thing as assign but was too lazy to overload that operator
             }
         }
+        char temp[100]="";
+        sprintf(temp,"{exid:%d,sets:%d,reps:%d},",best_choice.exercise_id, best_choice.sets, best_choice.reps);
+        ret += temp;
+
+        //reset counters due to redone calcs
+        next_seconds_left = seconds_left;
+        memcpy(next_fatigue, current_fatigue, num_body_parts * sizeof(double));
+
+        //for sake of laziness
+        int i = best_choice.exercise_id;
+
+        //recalc fatigue and time
+        for (int k = 0; k < num_body_parts; ++k)
+            next_fatigue[k] -= FATIGUE_RUST * exercises[i].sec_per_rep * cur_choice.reps*cur_choice.sets;
+        for (int k = 0; k < exercises[i].body_parts.size(); ++k)
+            next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT*exercises[i].level* cur_choice.reps*cur_choice.sets;
+        next_seconds_left -= cur_choice.reps*cur_choice.sets*exercises[i].sec_per_rep;
+
+        seconds_left = next_seconds_left;
+        memcpy(current_fatigue, next_fatigue, num_body_parts * sizeof(double));
     }
+
+    ret = ret.substr(0,ret.size()-1) + "]";
 
     printf("generate_workout not yet fully implemented!\n");
     return 0;
