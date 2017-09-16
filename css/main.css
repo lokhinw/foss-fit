@@ -13,12 +13,20 @@
     height: 50%;
 }
 
-.index-btn{
+.index-btn {
     width: 100%;
 }
 
-@media only screen and (max-width:430px){
-    nav a.brand-logo{
+@media only screen and (max-width:430px) {
+    nav a.brand-logo {
         width: 100%;
     }
+}
+
+#wo-preview {
+    margin-bottom: 54px!important
+}
+
+.noUi-connect {
+    background: #1e88e5 !important;
 }
