@@ -11,9 +11,42 @@
 <div class="container">
     <h3 style="text-align: center;">How long do you want to work out for?</h3>
     <div id="test-slider"></div>
+    <div class="row">
+        <div class="col s12 m6">
+            <h3 class="center-align">How intense do you want your workout to be?</h3>
+            <p>
+                <input class="with-gap" name="group1" type="radio" id="easy" />
+                <label for="easy">Easy</label>
+            </p>
+            <p>
+                <input class="with-gap" name="group1" type="radio" id="regular" checked/>
+                <label for="regular">Regular</label>
+            </p>
+            <p>
+                <input class="with-gap" name="group1" type="radio" id="intense" />
+                <label for="intense">Intense</label>
+            </p>
+        </div>
+        <div class="col s12 m6">
+            <h3 class="center-align">On which body parts do you want to focus?</h3>
+            <select multiple name="body_parts" id="body_parts">
+            <option value="" disabled selected>Choose your options</option>
+      <option value="1">Abs</option>
+      <option value="2">Arms</option>
+      <option value="3">Back</option>
+      <option value="4">Butt and Hip</option>
+      <option value="5">Chest</option>
+      <option value="6">Lower Leg</option>
+      <option value="7">Upper Leg</option>
+      <option value="8">Shoulder</option>
+      <option value="9">Full Body</option>
+      <option value="10">Neck</option>
+        </select>
+        </div>
+    </div>
 </div>
-<a href="" class="waves-effect waves-light btn-large blue white-text darken-1 index-btn" style="position: fixed; bottom: 0;" id="preferences-next">NEXT</a>
-
+<a href="" class="waves-effect waves-light btn-large blue white-text darken-1 index-btn" style="position: fixed; bottom: 0;"
+    id="preferences-next">NEXT</a>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/10.1.0/nouislider.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/10.1.0/nouislider.js"></script>
 <script src="/javascripts/preferences.js"></script>

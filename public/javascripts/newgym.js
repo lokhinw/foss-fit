@@ -11,6 +11,6 @@ $('#newgym-done-button').click(e=>{
 
 	jQuery.post("/userflow/save-newgym", params).done(data=>{
 		console.log('request successful')
-		window.location.href='/userflow/preview?gym'+gym
+		window.location.href='/userflow/preferences?gym='+gym
 	})
 })

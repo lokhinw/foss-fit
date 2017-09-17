@@ -1,3 +1,8 @@
+<style>
+    .row {
+        margin-bottom: 0;
+    }
+</style>
 <div class="navbar-fixed">
     <nav>
         <div class="nav-wrapper blue darken-1">
@@ -9,17 +14,21 @@
     </nav>
 </div>
 {{#each workout}}
-<div class="row">
-    <div class="col s12 m7">
-        <div class="card horizontal">
-            <div class="card-image">
-                <img src="{{ this.img }}">
-            </div>
-            <div class="card-content">
-                <span class="card-title">{{this.name}}</span>
-                <p><b>{{this.sets}}</b> sets of <b>{{this.reps}}</b> reps</p>
+    <div class="row">
+        <div class="col s12 m7">
+            <div class="card horizontal">
+                <div class="card-image">
+                    <img src="{{ this.img }}">
+                </div>
+                <div class="card-content">
+                    <span class="card-title">{{this.name}}</span>
+                    {{#if_eq this.name "Rest"}}
+                        <p><b>{{this.reps}}</b> seconds</p>
+                        {{else}}
+                            <p><b>{{this.sets}}</b> sets of <b>{{this.reps}}</b> reps</p>
+                    {{/if_eq}}
+                </div>
             </div>
         </div>
     </div>
-</div>
 {{/each}}

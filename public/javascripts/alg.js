@@ -48,7 +48,7 @@ class Alg{
                 fatigue_diff[i] = current_fatigue[i] - intended_fatigue[i];
             }
             var seconds_rest = Math.floor(Math.max(Math.max(...fatigue_diff), 0) / FATIGUE_RUST);
-            for (let i = 0; i < Object.keys(exercises).length; i++) {
+            for (let i = 0; i < Object.keys(exercises).length - 1; i++) {
                 var equipment_is_avail = true;
                 next_seconds_left = seconds_left - seconds_rest;
                 for (let j = 0; j < exercises[i].equipment.length; j++) {
@@ -117,6 +117,7 @@ class Alg{
              for (let k = 1; k < num_body_parts; k++) {
                  cur_choice_dev += Math.pow(next_fatigue[k] - intended_fatigue[k], 2.0);
              }
+             cur_choice_dev += Math.random()*9000;
              if (cur_choice_dev < best_choice_dev) {
                  best_choice_dev = JSON.parse(JSON.stringify(cur_choice_dev));
                  best_choice = JSON.parse(JSON.stringify(cur_choice));
@@ -125,7 +126,7 @@ class Alg{
          }
          if (seconds_rest > 0) {
             ret.push({
-             "exercise_id": 0,
+             "exercise_id": 323,
              "sets": 0,
              "reps": seconds_rest
          });
@@ -148,7 +149,11 @@ class Alg{
         }
         current_fatigue = next_fatigue.slice(0);
     }
-    // console.log(ret);
+    console.log(ret);
+    for (let i = 0; i < ret.length; i ++)
+    {
+        console.log(exercises[ret[i].exercise_id])
+    }
     return ret;
 }
 
@@ -158,17 +163,19 @@ static get_data(firebase) {
 }
 
 static get_input(data, request) {
+    console.log(161)
     let gymId = request.query.gym
     let equipment = data['gyms'][gymId]['equipment']
-    let equip_avail = []
-    for (let i = 0; i < equipment.length; i++) {
-        equip_avail.push(parseInt(equipment[i].id))
-    }
+    let equip_avail = equipment.map(x=>parseInt(x.id))
+    equip_avail.push(10)
 
-    // console.log(equip_avail)
-    // p.available_equipment = equip_avail
-    p.available_equipment = [2, 3]
+    p.available_equipment = equip_avail
+    p.intensity = 20 + 40 * (request.query.level || 1)
     p.min_pref = parseInt(request.query.duration)
+    p.focus = request.query.focuses.split(',').map(parseInt)
+    if (!p.focus) p.focus = [];
+
+    console.log(p)
 }
 
 static createWorkout(database, request) {
@@ -176,7 +183,7 @@ static createWorkout(database, request) {
     return new Promise((resolve, reject)=>{
         this.get_data(database).then(data => {
             exercises = data["exercises"];
-
+            console.log("180")
             this.get_input(data, request);
 
             resolve(this.generate_workout())

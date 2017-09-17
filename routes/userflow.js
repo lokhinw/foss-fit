@@ -18,48 +18,49 @@ var config = {
 const firebase = (require('firebase')).initializeApp(config)
 
 //userflow index: 1  (go to either 2, 3, OR 4)
-router.get('/location', function(req, res, next) {
+router.get('/location', function (req, res, next) {
 	res.render('location')
 });
 
-router.get('/nearme', function(req, res, next){
+router.get('/nearme', function (req, res, next) {
 	let latitude = req.query.lat
 	let longitude = req.query.long
 	var async = []
-	GMaps.search(latitude, longitude).then(data=>{
+	GMaps.search(latitude, longitude).then(data => {
 		var results = []
 		// dude only get the first result for now
 		// res.send(data)
-		for(let i = 0; i<data['results'].length; i++){
+		for (let i = 0; i < data['results'].length; i++) {
 			results.push({
 				name: data['results'][i]['name'],
 				id: data['results'][i]['id'],
 				address: data['results'][i]['vicinity']
 			})
-			if(data['results'][i]['photos']){
+			if (data['results'][i]['photos']) {
 				results[i].photo_reference = data['results'][i]['photos'][0]['photo_reference']
 			}
 		}
 
-		for(let i = 0; i<data['results'].length; i++){
-		//save api requests by only doing 1
-		// for(let i = 0; i<1; i++){
+		for (let i = 0; i < data['results'].length; i++) {
+			//save api requests by only doing 1
+			// for(let i = 0; i<1; i++){
 			console.log('searching')
-			if(!results[i].photo_reference)
+			if (!results[i].photo_reference)
 				continue;
 			async.push(true)
-			GPlaces.getPhoto(results[i].photo_reference).then(photo=>{
+			GPlaces.getPhoto(results[i].photo_reference).then(photo => {
 				results[i].photo = photo.url
 				console.log(photo.url)
 				async.pop()
 			})
 		}
-		let wait = () =>{
-			if(async.length > 0){
+		let wait = () => {
+			if (async.length > 0) {
 				setTimeout(wait, 100)
-			}
-			else{
-				res.render('nearme', {locations: results})
+			} else {
+				res.render('nearme', {
+					locations: results
+				})
 			}
 		}
 		wait()
@@ -68,20 +69,20 @@ router.get('/nearme', function(req, res, next){
 
 //userflow index: 2
 //this provides the gui for creating a new gym
-router.get('/newgym', function(req, res, next) {
+router.get('/newgym', function (req, res, next) {
 	//first do a check to see if the gym exists...
 	let gym = req.query.gym
-	firebase.database().ref('gyms/'+gym).once('value').then(snapshot=>{
+	firebase.database().ref('gyms/' + gym).once('value').then(snapshot => {
 		console.log('querying')
 		let data = snapshot.val()
-		if(data){
+		if (data) {
 			console.log('redireecting...')
 			res.writeHead(302, {
-				Location: '/userflow/preferences?gym='+gym
+				Location: '/userflow/preferences?gym=' + gym
 			})
 			res.end()
 			// res.location(302, '/preferences?gym='+gym)
-		}else{
+		} else {
 			res.render('newgym')
 			//let the user see this page...
 		}
@@ -89,40 +90,52 @@ router.get('/newgym', function(req, res, next) {
 });
 
 //this is the post request that the gui sends to save data in a database
-router.post('/save-newgym', function(req, res, next) {
+router.post('/save-newgym', function (req, res, next) {
 	let gym = req.body.gym
 	let available_equipment = req.body.equipment
 	// console.log(available_equipment)
-	firebase.database().ref('gyms/'+gym).set({
+	firebase.database().ref('gyms/' + gym).set({
 		equipment: available_equipment
 	})
 	res.send('success')
 });
 
 //userflow index: 4
-router.get('/bodypart', function(req, res, next) {
+router.get('/bodypart', function (req, res, next) {
 	res.render('bodypart')
 });
 
 //userflow index: 5
-router.get('/preferences', function(req, res, next) {
+router.get('/preferences', function (req, res, next) {
 	res.render('preferences')
 });
 
 //userflow index: 6
-router.get('/preview', function(req, res, next){
+router.get('/preview', function (req, res, next) {
 	var database = firebase.database()
-	database.ref('exercises').once("value").then(snapshot=>{
+	database.ref('exercises').once("value").then(snapshot => {
 		let data = snapshot.val()
-		Alg.createWorkout(firebase, req).then(workout=>{
+		Alg.createWorkout(firebase, req).then(workout => {
 			// res.send(workout)
-			for(let i=0; i<workout.length; i++){
+			for (let i = 0; i < workout.length; i++) {
 				workout[i].name = data[workout[i].exercise_id].name
 				workout[i].img = data[workout[i].exercise_id].img
 				workout[i].desc = data[workout[i].exercise_id].desc
 			}
-			res.render('preview', {workout: workout, exercises: data})
-		}).catch(e=>{
+			res.render('preview', {
+				workout: workout,
+				exercises: data,
+				helpers: {
+					if_eq: function (a, b, opts) {
+						if (a == b) // Or === depending on your needs
+							return opts.fn(this);
+						else
+							return opts.inverse(this);
+						console.log(12)
+					}
+				}
+			})
+		}).catch(e => {
 			console.error(e)
 		});
 	})

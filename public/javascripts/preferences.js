@@ -2,6 +2,11 @@
 	'use strict'
 	window.workout_duration = 20
 
+	$('document').ready(()=>{
+			$('select').material_select();
+
+	})
+
 	var slider = document.getElementById('test-slider');
 	noUiSlider.create(slider, {
 		start: [20],
@@ -22,7 +27,12 @@
 		e.preventDefault()
 		var searchParams = new URLSearchParams(window.location.search)
 		let gym = searchParams.get('gym')
+		let level = ['easy','regular','intense'].indexOf($('input[name="group1"]:checked')[0].id)
+		let focuses = $('#body_parts').val().join(',')
 		//FIX THIS DOESNT WORK ALWAYS SAYS THE DURATION IS 0
-		window.location.href = '/userflow/preview?gym='+gym+'&duration='+window.workout_duration
+		window.location.href = '/userflow/preview?gym='+gym+'&duration='+window.workout_duration+'&level='+level+'&focuses='+focuses
 	})
+
+
+	
 })()
