@@ -1,4 +1,4 @@
-const FOCUS_MULTIPLIER = 2.5;
+const FOCUS_MULTIPLIER = 250;
 const FATIGUE_RUST = 0.01;
 const FATIGUE_MULT = 0.08;
 let default_weights = [0, 1, 1, 1, 1, 1, 1, 1, 0.5, 1.3, 0.2]
