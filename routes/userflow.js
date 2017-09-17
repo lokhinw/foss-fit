@@ -66,13 +66,36 @@ router.get('/nearme', function(req, res, next){
 })
 
 //userflow index: 2
+//this provides the gui for creating a new gym
 router.get('/newgym', function(req, res, next) {
-	res.send('complete this endpoint')
+	//first do a check to see if the gym exists...
+	let gym = req.query.gym
+	firebase.database().ref('gyms/'+gym).once('value').then(snapshot=>{
+		console.log('querying')
+		let data = snapshot.val()
+		if(data){
+			console.log('redireecting...')
+			res.writeHead(302, {
+				Location: '/userflow/preferences?gym='+gym
+			})
+			res.end()
+			// res.location(302, '/preferences?gym='+gym)
+		}else{
+			res.render('newgym')
+			//let the user see this page...
+		}
+	})
 });
 
-//userflow index: 3
-router.get('/fromhome', function(req, res, next) {
-	res.send('complete this endpoint')
+//this is the post request that the gui sends to save data in a database
+router.post('/save-newgym', function(req, res, next) {
+	let gym = req.body.gym
+	let available_equipment = req.body.equipment
+	console.log(available_equipment)
+	firebase.database().ref('gyms/'+gym).set({
+		equipment: available_equipment
+	})
+	res.send('success')
 });
 
 //userflow index: 4

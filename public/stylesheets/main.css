@@ -34,3 +34,10 @@
 #test-slider{
     margin-top: 5rem;
 }
+.chips {
+    margin-top: 5%;
+}
+
+.chips .input {
+    width: 100% !important;
+}

@@ -1,0 +1,152 @@
+
+<div class="navbar-fixed">
+    <nav>
+        <div class="nav-wrapper blue darken-1">
+            <a class="brand-logo center">Add a Gym</a>
+            <ul id="nav-mobile" class="left">
+                <li><a id="back-button"><i class="material-icons">arrow_back</i></a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="chips chips-autocomplete"></div>
+    </div>
+    <div class="row">
+        <div class="col s10 offset-s1 m6 offset-m2 waves-effect waves-light btn-large blue darken-1" style="position: absolute; top: 45%; z-index:-1" id="newgym-done-button">Done</div>
+    </div>
+</div>
+<script>
+    let CHIPS = [{
+        tag: "Dumbbells",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/1.jpg",
+        id: 1
+    },
+    {
+        tag: "Barbell",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/2.jpg",
+        id: 2
+    },
+    {
+        tag: "Bench",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/3.jpg",
+        id: 3
+    },
+    {
+        tag: "Resistance Bands/Cables",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/4.jpg",
+        id: 4
+    },
+    {
+        tag: "BOSU Trainer",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/5.jpg",
+        id: 5
+    },
+    {
+        tag: "TRX",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/6.jpg",
+        id: 6
+    },
+    {
+        tag: "Raised Platform/Box",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/7.jpg",
+        id: 7
+    },
+    {
+        tag: "Stability Ball",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/8.jpg",
+        id: 8
+    },
+    {
+        tag: "Medicine Ball",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/9.jpg",
+        id: 9
+    },
+    {
+        tag: "No Equipment",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/10.jpg",
+        id: 10
+    },
+    {
+        tag: "Cones",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/12.jpg",
+        id: 12
+    },
+    {
+        tag: "Weight Machines / Selectorized",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/14.jpg",
+        id: 14
+    },
+    {
+        tag: "Pull up bar",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/15.jpg",
+        id: 15
+    },
+    {
+        tag: "Ladder",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/17.jpg",
+        id: 17
+    },
+    {
+        tag: "Hurdles",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/18.jpg",
+        id: 18
+    },
+    {
+        tag: "Kettlebells",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/19.jpg",
+        id: 19
+    },
+    {
+        tag: "Heavy Ropes",
+        image: "https://www.acefitness.org/acefit/img/exerciselibrary/equipment/20.jpg",
+        id: 20
+    }
+    ];
+
+    let NAMES = CHIPS.map(x => x.tag);
+
+    $("document").ready(function () {
+        $('.chips').material_chip();
+        $('.chips-autocomplete').material_chip({
+            placeholder: "Search for equipment...",
+            autocompleteOptions: {
+                data: {
+                    "Dumbbells": null,
+                    "Barbell": null,
+                    "Bench": null,
+                    "Resistance Bands/Cables": null,
+                    "BOSU Trainer": null,
+                    "TRX": null,
+                    "Raised Platform/Box": null,
+                    "Stability Ball": null,
+                    "Medicine Ball": null,
+                    "No Equipment": null,
+                    "Cones": null,
+                    "Weight Machines / Selectorized": null,
+                    "Pull up bar": null,
+                    "Ladder": null,
+                    "Hurdles": null,
+                    "Kettlebells": null,
+                    "Heavy Ropes": null
+                },
+                limit: Infinity,
+                minLength: 1
+            }
+        });
+        let data = () => $('.chips-autocomplete').material_chip('data');
+        $('.chips').on('chip.add', (e, chip) => {
+            data().pop();
+            if (NAMES.indexOf(chip.tag) < 0) {
+                $(".chip:last-of-type").remove();
+            } else {
+                data().push(JSON.parse(JSON.stringify(
+                    CHIPS[NAMES.indexOf(chip.tag)])));
+                $('<img src="' + data()[data().length - 1].image + '">').appendTo($(
+                    ".chip:last-of-type"));
+            }
+        });
+    });
+</script>
+<script type="text/javascript" src="/javascripts/newgym.js"></script>

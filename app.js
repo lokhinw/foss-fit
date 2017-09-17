@@ -11,8 +11,14 @@ var exphbs =  require('express-handlebars')
 var index = require('./routes/index');
 var users = require('./routes/users');
 var userflow = require('./routes/userflow');
+var bodyParser = require('body-parser')
 
 var app = express();
+
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({
+	extended: true
+}));   
 
 
 // view engine setup

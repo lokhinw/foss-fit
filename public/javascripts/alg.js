@@ -1,19 +1,19 @@
- const FOCUS_MULTIPLIER = 2.5;
- const FATIGUE_RUST = 0.012;
- const FATIGUE_MULT = 0.08;
- let default_weights = [0, 1, 1, 1, 1, 1, 1, 1, 0.5, 1.3, 0.2]
- let equip_delay = [0, 10, 30, 40, 10, 10,
- 10, 10, 20, 10,  0,
- 0, 60,  0, 40, 10,
- 0, 40, 90, 10, 20]
+const FOCUS_MULTIPLIER = 2.5;
+const FATIGUE_RUST = 0.01;
+const FATIGUE_MULT = 0.08;
+let default_weights = [0, 1, 1, 1, 1, 1, 1, 1, 0.5, 1.3, 0.2]
+let equip_delay = [0, 10, 30, 40, 10, 10,
+10, 10, 20, 10,  0,
+0, 60,  0, 40, 10,
+0, 40, 90, 10, 20]
 
- var exercises = [];
- var num_types_equipment = 19,
- num_body_parts = 11;
- var equipment_is_machine = false;
- var p = {
-    "intensity": 500,
-    "focus": [],
+var exercises = [];
+var num_types_equipment = 19,
+num_body_parts = 11;
+var equipment_is_machine = false;
+var p = {
+    "intensity": 500, 
+    "focus": [], 
     "available_equipment": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
     "min_pref": 60
 };
@@ -44,114 +44,110 @@ function generate_workout() {
         var best_choice_ind;
         for (let i = 0; i < num_body_parts; i++)
         {
-          fatigue_diff[i] = current_fatigue[i] - intended_fatigue[i];
-      }
-      var seconds_rest = Math.floor(Math.max(Math.max( ...fatigue_diff ),0)/FATIGUE_RUST);
-      for (let i = 0; i < Object.keys(exercises).length; i++) {
-          var equipment_is_avail = true;
-          next_seconds_left = seconds_left - seconds_rest;
-          for (let j = 0; j < exercises[i].equipment.length; j++)
-          {
-              if (p.available_equipment.indexOf(exercises[i].equipment[j]) <= 0)
-              {
-                 equipment_is_avail = false;
-                 break;
-             }
-             next_seconds_left -= equip_delay[j];
-         }	
-         if (equipment_is_avail === false)
-         {
-          continue;
-      }
-      next_fatigue = current_fatigue.slice(0);
-      cur_choice = {
-        "exercise_id": i,
-        "sets": 1,
-        "reps": 0
-    };
-    var more_reps = true;
-    for (let j = 0; more_reps; j++) {
-        cur_choice.reps++;
-        next_seconds_left -= (exercises[i].sec_per_rep || 5);
-        for (let k = 1; k < num_body_parts; k++) {
-            next_fatigue[k] -= FATIGUE_RUST * (exercises[i].sec_per_rep || 5);
+            fatigue_diff[i] = current_fatigue[i] - intended_fatigue[i];
+        }
+        var seconds_rest = Math.floor(Math.max(Math.max( ...fatigue_diff ),0)/FATIGUE_RUST);
+        for (let i = 0; i < Object.keys(exercises).length; i++) {
+            var equipment_is_avail = true;
+            next_seconds_left = seconds_left - seconds_rest;
+            for (let j = 0; j < exercises[i].equipment.length; j++)
+            {
+                if (p.available_equipment.indexOf(exercises[i].equipment[j]) < 0)
+                {
+                    equipment_is_avail = false;
+                    break;
+                }
+                next_seconds_left -= equip_delay[j];
+            }	
+            if (equipment_is_avail === false)
+            {
+                continue;
+            }
+            next_fatigue = current_fatigue.slice(0);
+            cur_choice = {
+                "exercise_id": i,
+                "sets": 1,
+                "reps": 0
+            };
+            var more_reps = true;
+            for (let j = 0; more_reps; j++) {
+                cur_choice.reps++;
+                next_seconds_left -= (exercises[i].sec_per_rep || 5);
+                for (let k = 1; k < num_body_parts; k++) {
+                    next_fatigue[k] -= FATIGUE_RUST * (exercises[i].sec_per_rep || 5);
+                }
+                for (let k = 0; k < exercises[i].body_parts.length; k++) {
+                    next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * (exercises[i].level+1);
+                    if (next_fatigue[exercises[i].body_parts[k]] > intended_fatigue[exercises[i].body_parts[k]]) {
+                        more_reps = false;
+                        break;
+                    }
+                }
+            }         
+            let reps_per_rep = [1, 4, 4, 4, 4, 8, 8, 8, 8, 10, 10, 10, 12, 12, 15, 15, 15, 8, 8, 10, 10, 10, 10, 12, 12, 12, 12, 15, 15, 15, 15];
+            let sets_per_rep = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
+            if (cur_choice.reps > 30) {
+                cur_choice = {
+                    "exercise_id": i,
+                    "sets": 2,
+                    "reps": 15
+                };
+            } else {
+                cur_choice = {
+                    "exercise_id": i,
+                    "sets": sets_per_rep[cur_choice.reps],
+                    "reps": reps_per_rep[cur_choice.reps]
+                };
+            }
+            next_seconds_left = seconds_left - seconds_rest;
+            next_fatigue = current_fatigue.slice(0);
+            for (let k = 0; k < num_body_parts; k++) {
+                next_fatigue[k] -= FATIGUE_RUST * ((exercises[i].sec_per_rep || 5) * cur_choice.reps * cur_choice.sets + (cur_choice.sets-1) * 5);
+            }
+            for (let k = 0; k < exercises[i].body_parts.length; k++) {
+                next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * exercises[i].level * cur_choice.reps *
+                cur_choice.sets;
+            }
+            next_seconds_left -= cur_choice.reps * cur_choice.sets * (exercises[i].sec_per_rep || 5) - (cur_choice.sets-1)*5;
+            cur_choice_dev = 0;
+            for (let k = 1; k < num_body_parts; k++) {
+                cur_choice_dev += Math.pow(next_fatigue[k] - intended_fatigue[k], 2.0);
+            }
+            if (cur_choice_dev < best_choice_dev) {
+                // best_choice_dev = JSON.parse(JSON.stringify(cur_choice_dev));
+                // best_choice = JSON.parse(JSON.stringify(cur_choice));
+                best_choice_dev = Object.assign({}, cur_choice_dev);
+                best_choice = Object.assign({}, cur_choice);
+                best_choice_ind = i;
+            }
+        }
+        if (seconds_rest > 0){
+            ret.push({
+                "exercise_id": 0,
+                "sets": 0,
+                "reps": seconds_rest});
+        }
+        ret.push(Object.assign({}, best_choice));
+        next_seconds_left = seconds_left - seconds_rest;
+        next_fatigue = current_fatigue.slice(0);
+        var i = best_choice_ind;
+        for (let k = 0; k < num_body_parts; k++) {
+            let sec_per_rep = (exercises[i] ? exercises[i].sec_per_rep : 5)
+            next_fatigue[k] -= FATIGUE_RUST * (sec_per_rep) * cur_choice.reps * cur_choice.sets;
         }
         for (let k = 0; k < exercises[i].body_parts.length; k++) {
-         next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * (exercises[i].level+1);
-         if (next_fatigue[exercises[i].body_parts[k]] > intended_fatigue[exercises[i].body_parts[k]]) {
-            more_reps = false;
-            break;
+            next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * exercises[i].level * cur_choice.reps *
+            cur_choice.sets;
         }
+        next_seconds_left -= cur_choice.reps * cur_choice.sets * (exercises[i].sec_per_rep || 5);
+        seconds_left = next_seconds_left;
+        if (seconds_left <= 0) {
+            another_exercise = false;
+        }
+        current_fatigue = next_fatigue.slice(0);
     }
-}         
-let reps_per_rep = [0, 4, 4, 4, 4, 8, 8, 8, 8, 10, 10,
-10, 12, 12, 15, 15, 15, 8, 8, 10, 10,
-10, 10, 12, 12, 12, 12, 15, 15, 15, 15
-];
-let sets_per_rep = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-1, 1, 1, 1, 1, 1, 2, 2, 2, 2,
-2, 2, 2, 2, 2, 2, 2, 2, 2, 2
-];
-if (cur_choice.reps > 30) {
-    cur_choice = {
-        "exercise_id": i,
-        "sets": 2,
-        "reps": 15
-    };
-} else {
-    cur_choice = {
-        "exercise_id": i,
-        "sets": sets_per_rep[cur_choice.reps],
-        "reps": reps_per_rep[cur_choice.reps]
-    };
-}
-next_seconds_left = seconds_left - seconds_rest;
-next_fatigue = current_fatigue.slice(0);
-for (let k = 0; k < num_body_parts; k++) {
-    next_fatigue[k] -= FATIGUE_RUST * ((exercises[i].sec_per_rep || 5) * cur_choice.reps * cur_choice.sets + (cur_choice.sets-1) * 5);
-}
-for (let k = 0; k < exercises[i].body_parts.length; k++) {
-    next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * exercises[i].level * cur_choice.reps *
-    cur_choice.sets;
-}
-next_seconds_left -= cur_choice.reps * cur_choice.sets * (exercises[i].sec_per_rep || 5) - (cur_choice.sets-1)*5;
-cur_choice_dev = 0;
-for (let k = 1; k < num_body_parts; k++) {
-    cur_choice_dev += Math.pow(next_fatigue[k] - intended_fatigue[k], 2.0);
-}
-if (cur_choice_dev < best_choice_dev) {
-    best_choice_dev = JSON.parse(JSON.stringify(cur_choice_dev));
-    best_choice = JSON.parse(JSON.stringify(cur_choice));
-    best_choice_ind = i;
-}
-}
-if (seconds_rest > 0)
-{
-  ret.push({
-    "exercise_id": 0,
-    "sets": 0,
-    "reps": seconds_rest});
-}
-ret.push(JSON.parse(JSON.stringify(best_choice)));
-next_seconds_left = seconds_left - seconds_rest;
-next_fatigue = current_fatigue.slice(0);
-var i = best_choice_ind;
-for (let k = 0; k < num_body_parts; k++) {
-    next_fatigue[k] -= FATIGUE_RUST * (exercises[i].sec_per_rep || 5) * cur_choice.reps * cur_choice.sets;
-}
-for (let k = 0; k < exercises[i].body_parts.length; k++) {
-    next_fatigue[exercises[i].body_parts[k]] += FATIGUE_MULT * exercises[i].level * cur_choice.reps *
-    cur_choice.sets;
-}
-next_seconds_left -= cur_choice.reps * cur_choice.sets * (exercises[i].sec_per_rep || 5);
-seconds_left = next_seconds_left;
-if (seconds_left <= 0) {
-    another_exercise = false;
-}
-current_fatigue = next_fatigue.slice(0);
-}
-console.log (ret);
-return ret;
+    console.log (ret);
+    return ret;
 }
 function get_data() {
     var config = {
@@ -166,11 +162,24 @@ function get_data() {
     database = firebase.database();
     return database.ref().once("value").then(snapshot => snapshot.val());
 }
-function get_input() {
-    console.log("Not implemented!")
+function get_input(data) {
+    var searchParams = new URLSearchParams(window.location.search)
+    let gymId = searchParams.get('gym')
+    let equipment = data['gyms'][gymId]['equipment']
+    let equip_avail = []
+    for(let i=0; i<equipment.length; i++){
+        equip_avail.push(parseInt(equipment[i].id))
+    }
+
+    console.log(equip_avail)
+    // p.available_equipment = equip_avail
+    p.available_equipment = [2, 3]
+    p.min_pref = parseInt(searchParams.get('duration'))
 }
 get_data().then(data => {
     exercises = data["exercises"];
-    get_input();
+
+    get_input(data);
+
     generate_workout();
 });
