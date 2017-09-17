@@ -99,11 +99,16 @@ router.post('/save-newgym', function(req, res, next) {
 });
 
 //userflow index: 4
+router.get('/bodypart', function(req, res, next) {
+	res.render('bodypart')
+});
+
+//userflow index: 5
 router.get('/preferences', function(req, res, next) {
 	res.render('preferences')
 });
 
-//userflow index: 5
+//userflow index: 6
 router.get('/preview', function(req, res, next){
 
 	var database = firebase.database()
