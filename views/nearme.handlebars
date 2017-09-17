@@ -1,0 +1,25 @@
+ <div class="navbar-fixed">
+    <nav>
+        <div class="nav-wrapper blue darken-1">
+            <a class="brand-logo center">Choose Location</a>
+            <ul id="nav-mobile" class="left">
+                <li><a href="/"><i class="material-icons">arrow_back</i></a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<ul class="collection">
+    {{#each locations}}
+    <a href="/userflow/newgym?gym={{this.id}}" class="collection-item avatar">
+        <li>
+            {{#if this.photo}}
+            <img src="{{this.photo}}" class="circle">
+            {{else}}
+            <img src="/img/small-circle-icons_gym.svg" class="circle">
+            {{/if}}
+            <span class="title">{{this.name}}</span>
+            <p>{{this.address}}</p>
+        </li>
+    </a>
+    {{/each}}
+</ul>
