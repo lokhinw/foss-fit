@@ -52,7 +52,7 @@ class Alg{
                 var equipment_is_avail = true;
                 next_seconds_left = seconds_left - seconds_rest;
                 for (let j = 0; j < exercises[i].equipment.length; j++) {
-                 if (p.available_equipment.indexOf(exercises[i].equipment[j]) <= 0) {
+                 if (p.available_equipment.indexOf(exercises[i].equipment[j]) < 0) {
                      equipment_is_avail = false;
                      break;
                  }
