@@ -1,4 +1,4 @@
-const FOCUS_MULTIPLIER = 2.5;
+const FOCUS_MULTIPLIER = 25;
 const FATIGUE_RUST = 0.01;
 const FATIGUE_MULT = 0.08;
 let default_weights = [0, 1, 1, 1, 1, 1, 1, 1, 0.5, 1.3, 0.2]
@@ -23,7 +23,7 @@ class Alg{
     static generate_workout() {
         var intended_fatigue = [];
         let _it_ftg = 9 * p.intensity;
-        let _ut_ftg = default_weights.map(x => ((p.focus.indexOf(x) > 0) ? 1 : FOCUS_MULTIPLIER) * x).reduce((a, b) => a + b, 0);
+        let _ut_ftg = default_weights.map(x => ((p.focus.indexOf(x) >= 0) ? 1 : FOCUS_MULTIPLIER) * x).reduce((a, b) => a + b, 0);
 
         let _g_ftg_m = _it_ftg / _ut_ftg;
         for (let i = 0; i < num_body_parts; i++) {
@@ -52,7 +52,7 @@ class Alg{
                 var equipment_is_avail = true;
                 next_seconds_left = seconds_left - seconds_rest;
                 for (let j = 0; j < exercises[i].equipment.length; j++) {
-                 if (p.available_equipment.indexOf(exercises[i].equipment[j]) <= 0) {
+                 if (p.available_equipment.indexOf(exercises[i].equipment[j]) < 0) {
                      equipment_is_avail = false;
                      break;
                  }
