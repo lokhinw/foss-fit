@@ -1,4 +1,7 @@
 require('dotenv').config()
+process.on('unhandledRejection', function(err, promise) {
+  console.error('Unhandled rejection (promise: ', promise, ', reason: ', err, ').');
+});
 
 var express = require('express');
 var path = require('path');
@@ -17,7 +20,7 @@ var app = express();
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({
-	extended: true
+  extended: true
 }));   
 
 

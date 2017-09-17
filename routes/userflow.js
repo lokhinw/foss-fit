@@ -4,9 +4,7 @@ var express = require('express');
 var router = express.Router();
 const GMaps = require('./../apis/GMaps')
 const GPlaces = require('./../apis/GPlaces')
-const createWorkout = require('./../public/javascripts/alg')
-
-console.log(createWorkout());
+const Alg = require('./../public/javascripts/alg')
 
 var config = {
 	apiKey: "AIzaSyBLaxKzlm4ns10k-q3MRxgP9mPu-L5sfvE",
@@ -94,7 +92,7 @@ router.get('/newgym', function(req, res, next) {
 router.post('/save-newgym', function(req, res, next) {
 	let gym = req.body.gym
 	let available_equipment = req.body.equipment
-	console.log(available_equipment)
+	// console.log(available_equipment)
 	firebase.database().ref('gyms/'+gym).set({
 		equipment: available_equipment
 	})
@@ -113,13 +111,21 @@ router.get('/preferences', function(req, res, next) {
 
 //userflow index: 6
 router.get('/preview', function(req, res, next){
-
 	var database = firebase.database()
-	var data = database.ref().once("value")
-	.then(snapshot => snapshot.val())
-	.then(data=>{
-		res.render('preview', {})
-	});
+	database.ref('exercises').once("value").then(snapshot=>{
+		let data = snapshot.val()
+		Alg.createWorkout(firebase, req).then(workout=>{
+			// res.send(workout)
+			for(let i=0; i<workout.length; i++){
+				workout[i].name = data[workout[i].exercise_id].name
+				workout[i].img = data[workout[i].exercise_id].img
+				workout[i].desc = data[workout[i].exercise_id].desc
+			}
+			res.render('preview', {workout: workout, exercises: data})
+		}).catch(e=>{
+			console.error(e)
+		});
+	})
 })
 
 module.exports = router;
