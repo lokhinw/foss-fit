@@ -87,7 +87,7 @@ router.get('/preview', function(req, res, next){
 	var data = database.ref().once("value")
 	.then(snapshot => snapshot.val())
 	.then(data=>{
-		res.send(data)
+		res.render('preview')
 	});
 })
 
