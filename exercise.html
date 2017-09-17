@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link type="text/css" rel="stylesheet" href="css/main.css">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>FOSSfit</title>
+</head>
+
+<body id="wo-preview">
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper blue darken-1">
+                <a href="#!" class="brand-logo center">1. Knee Tucks</a>
+                <ul id="nav-mobile" class="left">
+                    <li><a href="/"><i class="material-icons">arrow_back</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col xl6 s12" style="text-align: center;">
+                <img src="https://www.acefitness.org/acefit/img/exerciselibrary/large/204-4.jpg">
+            </div>
+            <div class="col xl6 s12">
+                <h4 style="text-align: left">3 sets &nbsp;&nbsp;&nbsp;&nbsp; 10 reps</h4>
+                <p>Lorem ipsum dolor sit amet. Lorem. Lorem ipsum dolor sit amet consectetur adipisicing elit. Et, aliquam.
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos ut, dolore labore officiis quia
+                    similique perspiciatis sed a nemo temporibus vero iste reiciendis numquam? Nesciunt eum laboriosam adipisci
+                    ex veritatis ab ipsum impedit corrupti exercitationem illum ad temporibus officiis voluptates nihil cum,
+                    qui vel magni ipsam enim ullam! Voluptates veniam consequatur reprehenderit incidunt dicta saepe quia
+                    rerum eaque nostrum inventore placeat voluptas voluptate ipsum, quidem iusto! Autem consequuntur quisquam
+                    magni harum a fuga maiores corrupti? Autem dolores rerum rem consectetur consequuntur doloremque eius
+                    nisi, in voluptatum inventore vel blanditiis neque, nobis vitae voluptatibus deserunt libero consequatur,
+                    facilis facere molestiae natus?</p>
+            </div>
+        </div>
+    </div>
+    <a href="" class="waves-effect waves-light btn-large blue white-text darken-1 index-btn" style="position: fixed; bottom: 0; ">NEXT</a>
+</body>
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.3.0/firebase-database.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyBLaxKzlm4ns10k-q3MRxgP9mPu-L5sfvE",
+        authDomain: "exercise-builder.firebaseapp.com",
+        databaseURL: "https://exercise-builder.firebaseio.com",
+        projectId: "exercise-builder",
+        storageBucket: "exercise-builder.appspot.com",
+        messagingSenderId: "678132867363"
+    };
+    firebase.initializeApp(config);
+    database = firebase.database();
+
+    database.ref().once("value").then(snapshot => console.log(snapshot.val()));
+</script>
+
+</html>
