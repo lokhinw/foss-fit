@@ -4,6 +4,9 @@ var express = require('express');
 var router = express.Router();
 const GMaps = require('./../apis/GMaps')
 const GPlaces = require('./../apis/GPlaces')
+const createWorkout = require('./../public/javascripts/alg')
+
+console.log(createWorkout());
 
 var config = {
 	apiKey: "AIzaSyBLaxKzlm4ns10k-q3MRxgP9mPu-L5sfvE",
@@ -115,7 +118,7 @@ router.get('/preview', function(req, res, next){
 	var data = database.ref().once("value")
 	.then(snapshot => snapshot.val())
 	.then(data=>{
-		res.render('preview')
+		res.render('preview', {})
 	});
 })
 
